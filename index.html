@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 selection:bg-amber-500 selection:text-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walk With Me | Trail Brother Selector</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts for Rugged/Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-display { font-family: 'Cabinet Grotesk', sans-serif; text-transform: uppercase; tracking: 0.05em; }
+        /* Tactical grid background effect */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(245, 158, 11, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="h-full bg-grid flex flex-col justify-between min-h-screen selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- Header / Top Bar -->
+    <header class="border-b border-slate-800/60 bg-slate-900/40 backdrop-blur-md px-6 py-4 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-mono tracking-widest text-amber-500 uppercase border border-amber-500/30 px-2 py-0.5 rounded bg-amber-500/5">Op-Intel</span>
+                <span class="text-sm font-semibold tracking-wider text-slate-400">WALK WITH ME</span>
+            </div>
+            <div id="progress-badge" class="hidden text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-full">
+                Progress: <span id="progress-text" class="text-amber-400 font-bold">0/0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-2xl bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-sm relative overflow-hidden">
+            
+            <!-- Tactical Accent Corner Lines -->
+            <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-amber-500/40"></div>
+            <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-amber-500/40"></div>
+            <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-amber-500/40"></div>
+            <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-amber-500/40"></div>
+
+            <!-- ======================================================= -->
+            <!-- SCREEN 1: INTRODUCTION & CONFIG                         -->
+            <!-- ======================================================= -->
+            <div id="screen-intro" class="space-y-8">
+                <div class="space-y-4">
+                    <span class="text-amber-500 text-xs font-mono tracking-widest block uppercase">// Briefing Command</span>
+                    <h1 class="text-4xl md:text-5xl font-black text-white leading-tight">Trail Brother<br><span class="text-amber-500">Selector</span></h1>
+                    <p class="text-slate-400 leading-relaxed text-sm md:text-base">
+                        Welcome to the High Adventure deployment hub. No boy hikes alone. This application will log individual profiles, process your roster cross-generationally, and optimize accountability pairings while finding unique synergies in their dynamic combat capabilities.
+                    </p>
+                </div>
+
+                <div class="border-t border-slate-800/80 pt-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-300">Active Deployment Roster (JSON Format)</label>
+                        <span class="text-[10px] text-slate-500 font-mono">Edit inline below if needed</span>
+                    </div>
+                    <textarea id="roster-input" class="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs text-emerald-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition shadow-inner leading-relaxed resize-none"></textarea>
+                </div>
+
+                <button onclick="startIngestion()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-4 px-6 rounded-xl transition-all duration-200 transform active:scale-[0.99] tracking-wider text-sm font-display flex justify-center items-center space-x-2 shadow-lg shadow-amber-500/10">
+                    <span>Initialize Data Collection</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                </button>
+            </div>
+
+
+            <!-- ======================================================= -->
+            <!-- SCREEN 2: SEQUENTIAL DATA ENTRY                         -->
+            <!-- ======================================================= -->
+            <div id="screen-entry" class="hidden space-y-8">
+                <!-- Profile Header Card -->
+                <div class="bg-slate-950/60 border border-slate-800/60 rounded-xl p-5 flex justify-between items-center">
+                    <div>
+                        <span id="entry-quorum" class="text-[10px] font-mono tracking-widest text-amber-500 uppercase px-2 py-0.5 rounded border border-amber-500/20 bg-amber-500/5"></span>
+                        <h2 id="entry-name" class="text-2xl font-black text-white mt-2"></h2>
+                    </div>
+                    <div class="text-right font-mono">
+                        <span class="text-[10px] text-slate-500 block uppercase">Target Index</span>
+                        <span id="entry-index-visual" class="text-sm font-bold text-slate-300"></span>
+                    </div>
+                </div>
+
+                <!-- Form Inputs -->
+                <form id="entry-form" onsubmit="submitBoyData(event)" class="space-y-5">
+                    
+                    <!-- Q1: Pop Culture Character -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">1. Pop Culture Character Persona</label>
+                        <input type="text" id="input-character" required placeholder="e.g., Batman, Obi-Wan, Spider-Man" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                    </div>
+
+                    <!-- Grid Layout for Dropdowns -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Q2: Animal Persona -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">2. Animal Spirit</label>
+                            <select id="input-animal" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition appearance-none">
+                                <option value="" disabled selected>Select Spirit...</option>
+                                <option value="Mountain Goat">Mountain Goat</option>
+                                <option value="Wolf">Wolf</option>
+                                <option value="Eagle">Eagle</option>
+                                <option value="Bear">Bear</option>
+                                <option value="Shark">Shark</option>
+                                <option value="Rattlesnake">Rattlesnake</option>
+                                <option value="Horse">Horse</option>
+                            </select>
+                        </div>
+
+                        <!-- Q3: Superpower -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">3. Tactical Superpower</label>
+                            <select id="input-superpower" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition appearance-none">
+                                <option value="" disabled selected>Select Power...</option>
+                                <option value="Invisibility">Invisibility</option>
+                                <option value="Fly">Fly</option>
+                                <option value="Teleport">Teleport</option>
+                                <option value="Superhuman Strength">Superhuman Strength</option>
+                                <option value="Jump 100ft">Jump 100ft</option>
+                                <option value="Instant Food Manifestation">Food Manifestation</option>
+                            </select>
+                        </div>
+
+                        <!-- Q4: Trail Weakness -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">4. Known Weakness</label>
+                            <select id="input-weakness" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition appearance-none">
+                                <option value="" disabled selected>Select Kryptonite...</option>
+                                <option value="Cold mornings">Cold mornings</option>
+                                <option value="Heat">Heat</option>
+                                <option value="Hunger">Hunger</option>
+                                <option value="Bugs">Bugs</option>
+                                <option value="Hiking uphill">Hiking uphill</option>
+                                <option value="Sleeping on the ground">Sleeping on dirt</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CTA Submission Button -->
+                    <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-bold py-4 px-6 rounded-xl transition-all duration-200 transform active:scale-[0.99] tracking-wider text-sm font-display flex justify-center items-center space-x-2 mt-4">
+                        <span id="btn-submit-text">Log Data & Proceed</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                </form>
+            </div>
+
+
+            <!-- ======================================================= -->
+            <!-- SCREEN 3: THE REVEAL                                    -->
+            <!-- ======================================================= -->
+            <div id="screen-reveal" class="hidden space-y-8">
+                <div class="text-center space-y-3">
+                    <span class="text-emerald-400 text-xs font-mono tracking-widest block uppercase">// Processing Complete</span>
+                    <h2 class="text-3xl font-black text-white">Brotherhood Formations</h2>
+                    <p class="text-slate-400 text-sm max-w-md mx-auto">
+                        The cross-age tactical mappings are secure. Review strategic trial assignments and operational synergy logic below.
+                    </p>
+                </div>
+
+                <!-- Generated Pairs Mount Point -->
+                <div id="pairings-container" class="space-y-6 max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar">
+                    <!-- Dynamic Rows Go Here -->
+                </div>
+
+                <!-- Control Actions -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-800/80">
+                    <button onclick="restartApp()" class="w-full bg-slate-950 hover:bg-slate-900 text-slate-400 border border-slate-800 font-semibold py-3 px-4 rounded-xl transition text-xs font-mono tracking-wider uppercase">
+                        Reset System
+                    </button>
+                    <button onclick="window.print()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 px-4 rounded-xl transition tracking-wider text-xs font-display uppercase">
+                        Print Field Manifest
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer / Branding -->
+    <footer class="border-t border-slate-900 px-6 py-4 text-center">
+        <p class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+            STRENGTH & HONOR &bull; MISSION READY PROTOTYPE &bull; &copy; 2026
+        </p>
+    </footer>
+
+    <!-- ======================================================= -->
+    <!-- APPLICATION ARCHITECT LOGIC (JAVASCRIPT)                -->
+    <!-- ======================================================= -->
+    <script>
+        // Default Sample Roster Data for immediate testing/editing
+        const defaultRoster = [
+            { "name": "Ethan Smith", "quorum": "Priest" },
+            { "name": "Caleb Jones", "quorum": "Priest" },
+            { "name": "Mason Davis", "quorum": "Teacher" },
+            { "name": "Luke Wilson", "quorum": "Teacher" },
+            { "name": "Jack Taylor", "quorum": "Deacon" },
+            { "name": "Oliver Brown", "quorum": "Deacon" },
+            { "name": "Wyatt Miller", "quorum": "Deacon" },
+            { "name": "Owen Garcia", "quorum": "Deacon" }
+        ];
+
+        // Christ-Like Attributes Array for automated random assignments
+        const christAttributes = ["Strength", "Peace", "Courage", "Friendship", "Gratitude", "Repentance", "Faith", "Obedience", "Forgiveness"];
+
+        // State Machine Object
+        let state = {
+            roster: [],
+            completedProfiles: [],
+            currentIndex: 0
+        };
+
+        // Initialize App UI
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('roster-input').value = JSON.stringify(defaultRoster, null, 4);
+        });
+
+        // Parse input string and boot up step-by-step wizard
+        function startIngestion() {
+            try {
+                const rawData = document.getElementById('roster-input').value;
+                state.roster = JSON.parse(rawData);
+                
+                if(!Array.isArray(state.roster) || state.roster.length === 0) {
+                    alert("System Error: Roster configuration must be an array populated with items.");
+                    return;
+                }
+                
+                state.completedProfiles = [];
+                state.currentIndex = 0;
+                
+                // Show Progress elements
+                document.getElementById('progress-badge').classList.remove('hidden');
+                updateProgressUI();
+                
+                // Shift Screens
+                document.getElementById('screen-intro').classList.add('hidden');
+                document.getElementById('screen-entry').classList.remove('hidden');
+                
+                loadBoyToForm();
+            } catch (e) {
+                alert("Data Parse Violation: Check your JSON format for syntax errors.");
+            }
+        }
+
+        // Dynamically load current index boy into form UI
+        function loadBoyToForm() {
+            if(state.currentIndex >= state.roster.length) {
+                processPairingsAndReveal();
+                return;
+            }
+
+            const currentBoy = state.roster[state.currentIndex];
+            document.getElementById('entry-name').innerText = currentBoy.name;
+            document.getElementById('entry-quorum').innerText = `${currentBoy.quorum} Guild`;
+            document.getElementById('entry-index-visual').innerText = `${state.currentIndex + 1} / ${state.roster.length}`;
+            
+            // Adjust CTA text if on final boy
+            if(state.currentIndex === state.roster.length - 1) {
+                document.getElementById('btn-submit-text').innerText = "Process & Generate Pairings";
+            } else {
+                document.getElementById('btn-submit-text').innerText = "Log Data & Proceed";
+            }
+
+            // Clear text field values for fresh input
+            document.getElementById('entry-form').reset();
+            document.getElementById('input-character').focus();
+            updateProgressUI();
+        }
+
+        // Action when form completes submission
+        function submitBoyData(event) {
+            event.preventDefault();
+            
+            const currentBoy = state.roster[state.currentIndex];
+            
+            // Draw random christ-like attribute
+            const randomAttribute = christAttributes[Math.floor(Math.random() * christAttributes.length)];
+
+            // Create Profile Record Object
+            const completedProfile = {
+                ...currentBoy,
+                character: document.getElementById('input-character').value.trim(),
+                animal: document.getElementById('input-animal').value,
+                superpower: document.getElementById('input-superpower').value,
+                weakness: document.getElementById('input-weakness').value,
+                attribute: randomAttribute
+            };
+
+            state.completedProfiles.push(completedProfile);
+            state.currentIndex++;
+            
+            loadBoyToForm();
+        }
+
+        function updateProgressUI() {
+            document.getElementById('progress-text').innerText = `${state.currentIndex}/${state.roster.length}`;
+        }
+
+        // =======================================================
+        // GENERATE TACTICAL PAIRING STORY SUMMARY
+        // =======================================================
+        function generateSynergyStory(pair) {
+            const b1 = pair[0];
+            const b2 = pair[1];
+            
+            // Scenario 1: Counter-balancing a weakness with a superpower
+            if (b1.weakness === "Cold mornings" && b2.superpower === "Instant Food Manifestation" || 
+                b2.weakness === "Cold mornings" && b1.superpower === "Instant Food Manifestation") {
+                return `Strategic pairing locked: One of these trail brothers despises cold mornings, but luckily, the other can instantly manifest hot food on demand to save camp morale before sunrise.`;
+            }
+            if (b1.weakness === "Hunger" && b2.superpower === "Instant Food Manifestation" || 
+                b2.weakness === "Hunger" && b1.superpower === "Instant Food Manifestation") {
+                return `Tactical optimization achieved: A fatal weakness to Hunger is completely mitigated by their partner's ability to manifest instant hot meals on the trail.`;
+            }
+            if (b1.weakness === "Hiking uphill" && (b2.superpower === "Superhuman Strength" || b2.superpower === "Fly" || b2.superpower === "Teleport")) {
+                return `${b1.name} might struggle climbing uphill, but ${b2.name} is deployed with ${b2.superpower} to literally pull or carry this squad over the summit.`;
+            }
+            if (b2.weakness === "Hiking uphill" && (b1.superpower === "Superhuman Strength" || b1.superpower === "Fly" || b1.superpower === "Teleport")) {
+                return `${b2.name} might struggle climbing uphill, but ${b1.name} is deployed with ${b1.superpower} to literally pull or carry this squad over the summit.`;
+            }
+
+            // Scenario 2: Animal Spirit Matches
+            if (b1.animal === b2.animal) {
+                return `Operational Alert: Two ${b1.animal} spirits have collided. This group possesses double the natural instincts and absolute pack symmetry on the mountain.`;
+            }
+            const predators = ["Wolf", "Bear", "Shark"];
+            if (predators.includes(b1.animal) && predators.includes(b2.animal)) {
+                return `Apex Squad Formed: The ultimate pairing of a ${b1.animal} and a ${b2.animal}. Wildlife on the trail better steer completely clear of this vanguard.`;
+            }
+
+            // Scenario 3: Fictional Team Ups
+            if (b1.character.toLowerCase() !== b2.character.toLowerCase()) {
+                // If they have distinct pop-culture entries, cross-reference them
+                const hooks = [
+                    `Command has cleared the legendary team-up of ${b1.character} and ${b2.character}. Their combined power sets a new benchmark for trail security.`,
+                    `When you combine the tactical brilliance of ${b1.character} with the pure energy of ${b2.character}, no obstacle stands a chance.`,
+                    `A wild crossover: ${b1.character} and ${b2.character} are navigating the wilderness together. Expect maximum trail dominance.`
+                ];
+                return hooks[Math.floor(Math.random() * hooks.length)];
+            }
+
+            // Fallback Gen 4: Default Attribute Catalyst
+            return `Brotherhood Alignment: Bound together by the matching attributes of ${b1.attribute} and ${b2.attribute}, their collective focus will conquer both trail logistics and spiritual markers.`;
+        }
+
+        // =======================================================
+        // STRATEGIC CROSS-AGE PAIRING ALGORITHM WITH STORY ENGINE
+        // =======================================================
+        function processPairingsAndReveal() {
+            document.getElementById('screen-entry').classList.add('hidden');
+            document.getElementById('screen-reveal').classList.remove('hidden');
+            document.getElementById('progress-badge').classList.add('hidden');
+
+            let pool = [...state.completedProfiles];
+            
+            // Break down array into demographic buckets
+            let deacons = pool.filter(b => b.quorum.toLowerCase() === 'deacon');
+            let olderBoys = pool.filter(b => b.quorum.toLowerCase() === 'teacher' || b.quorum.toLowerCase() === 'priest');
+
+            // Scramble arrays to guarantee organic variance across generation runs
+            deacons.sort(() => Math.random() - 0.5);
+            olderBoys.sort(() => Math.random() - 0.5);
+
+            let pairings = [];
+
+            // Primary Pass: Pair Deacons up with older boys
+            while (deacons.length > 0 && olderBoys.length > 0) {
+                pairings.push([deacons.pop(), olderBoys.pop()]);
+            }
+
+            // Secondary Pass: Check remaining pools if mathematical asymmetry leaves overages
+            let leftOverPool = [...deacons, ...olderBoys];
+            leftOverPool.sort(() => Math.random() - 0.5);
+
+            while (leftOverPool.length >= 2) {
+                pairings.push([leftOverPool.pop(), leftOverPool.pop()]);
+            }
+
+            // Triplet Pass: If odd number array left 1 final boy out, join him with the first duo
+            if (leftOverPool.length === 1) {
+                if(pairings.length > 0) {
+                    pairings[0].push(leftOverPool.pop());
+                } else {
+                    // Safe fall-back if total camp size was exactly 1 single human
+                    pairings.push([leftOverPool.pop()]);
+                }
+            }
+
+            renderPairs(pairings);
+        }
+
+        // Render final calculated teams to Dashboard DOM View
+        function renderPairs(pairings) {
+            const container = document.getElementById('pairings-container');
+            container.innerHTML = '';
+
+            pairings.forEach((pair, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-950/80 border border-slate-800/80 rounded-xl p-5 space-y-4 relative shadow-md";
+                
+                // Manifest badge marker
+                let badgeText = `TRAIL TEAM ${idx + 1}`;
+                if(pair.length === 3) badgeText += " [TRIPLET OUTPOST]";
+
+                let membersHtml = '';
+                
+                pair.forEach(boy => {
+                    // Quorum custom coloring strings
+                    let qColor = "text-amber-400 border-amber-500/20 bg-amber-500/5";
+                    if(boy.quorum.toLowerCase() === 'teacher') qColor = "text-sky-400 border-sky-500/20 bg-sky-500/5";
+                    if(boy.quorum.toLowerCase() === 'priest') qColor = "text-emerald-400 border-emerald-500/20 bg-emerald-500/5";
+
+                    membersHtml += `
+                        <div class="bg-slate-900/80 border border-slate-800/40 rounded-lg p-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <h4 class="text-sm font-bold text-white">${boy.name}</h4>
+                                    <span class="text-[9px] font-mono border px-1.5 py-0.2 rounded uppercase ${qColor}">${boy.quorum}</span>
+                                </div>
+                                <p class="text-slate-400 mt-1 font-mono text-[11px]">
+                                    <span class="text-slate-600">Persona:</span> ${boy.character} 
+                                    <span class="text-slate-600">/</span> ${boy.animal}
+                                </p>
+                            </div>
+                            <div class="sm:text-right flex flex-col justify-center font-mono text-[11px]">
+                                <p class="text-slate-400"><span class="text-slate-600">Power:</span> ${boy.superpower}</p>
+                                <p class="text-amber-500/90"><span class="text-slate-600">Trait:</span> ${boy.attribute}</p>
+                                <p class="text-rose-400/80"><span class="text-slate-600">Weakness:</span> ${boy.weakness}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Generate contextual brief narrative based on user responses
+                const squadBriefStory = generateSynergyStory(pair);
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-800/60 pb-2">
+                        <span class="text-[10px] font-mono tracking-widest text-amber-500 font-bold">${badgeText}</span>
+                        <span class="text-[9px] font-mono text-slate-500">SECURE FREQUENCY</span>
+                    </div>
+                    <div class="space-y-2.5">
+                        ${membersHtml}
+                    </div>
+                    <!-- Tactical Synergy Briefing Section -->
+                    <div class="mt-3 bg-amber-500/5 border border-amber-500/20 rounded-lg p-3">
+                        <span class="text-[9px] font-mono uppercase tracking-widest block text-amber-500 mb-1">// Tactical Synergy Analysis</span>
+                        <p class="text-[11px] text-slate-300 italic font-mono leading-relaxed">"${squadBriefStory}"</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Reboot application back to base operational view
+        function restartApp() {
+            if(confirm("Are you sure you want to clear current assignments?")) {
+                document.getElementById('screen-reveal').classList.add('hidden');
+                document.getElementById('screen-intro').classList.remove('hidden');
+                document.getElementById('progress-badge').classList.add('hidden');
+                state.currentIndex = 0;
+                state.completedProfiles = [];
+            }
+        }
+    </script>
+</body>
+</html>
+
+Initial commit of trail brother app
