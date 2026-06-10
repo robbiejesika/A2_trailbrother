@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Walk With Me | Trail Brother Selector</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Google Fonts for Rugged/Modern Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -23,7 +21,6 @@
 </head>
 <body class="h-full bg-grid flex flex-col justify-between min-h-screen selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- Header / Top Bar -->
     <header class="border-b border-slate-800/60 bg-slate-900/40 backdrop-blur-md px-6 py-4 sticky top-0 z-50">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -36,48 +33,53 @@
         </div>
     </header>
 
-    <!-- Main Content Container -->
     <main class="flex-grow flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-2xl bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-sm relative overflow-hidden">
             
-            <!-- Tactical Accent Corner Lines -->
             <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-amber-500/40"></div>
             <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-amber-500/40"></div>
             <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-amber-500/40"></div>
             <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-amber-500/40"></div>
 
-            <!-- ======================================================= -->
-            <!-- SCREEN 1: INTRODUCTION & CONFIG                         -->
-            <!-- ======================================================= -->
             <div id="screen-intro" class="space-y-8">
                 <div class="space-y-4">
                     <span class="text-amber-500 text-xs font-mono tracking-widest block uppercase">// Briefing Command</span>
                     <h1 class="text-4xl md:text-5xl font-black text-white leading-tight">Trail Brother<br><span class="text-amber-500">Selector</span></h1>
                     <p class="text-slate-400 leading-relaxed text-sm md:text-base">
-                        Welcome to the High Adventure deployment hub. No boy hikes alone. This application will log individual profiles, process your roster cross-generationally, and optimize accountability pairings while finding unique synergies in their dynamic combat capabilities.
+                        Welcome to the High Adventure deployment hub. Connect your roster directly via a published Google Sheets CSV endpoint to initialize tactical cross-age accountability pairings.
                     </p>
                 </div>
 
-                <div class="border-t border-slate-800/80 pt-6 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-300">Active Deployment Roster (JSON Format)</label>
-                        <span class="text-[10px] text-slate-500 font-mono">Edit inline below if needed</span>
+                <div class="border-t border-slate-800/80 pt-6 space-y-5">
+                    <div class="flex space-x-2 border-b border-slate-800 pb-3">
+                        <button id="tab-url" onclick="switchInputMethod('url')" class="text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded border border-amber-500 text-amber-400 bg-amber-500/5 transition">
+                            Google Sheets URL
+                        </button>
+                        <button id="tab-text" onclick="switchInputMethod('text')" class="text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded border border-slate-800 text-slate-500 hover:text-slate-300 transition">
+                            Manual Paste (CSV)
+                        </button>
                     </div>
-                    <textarea id="roster-input" class="w-full h-48 bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs text-emerald-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition shadow-inner leading-relaxed resize-none"></textarea>
+
+                    <div id="container-url" class="space-y-2">
+                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-300">Published CSV URL</label>
+                        <input type="url" id="sheet-url-input" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
+                        <span class="text-[10px] text-slate-500 font-mono block mt-1">Make sure you select 'Publish to web' -> 'Comma-separated values (.csv)' inside Google Sheets.</span>
+                    </div>
+
+                    <div id="container-text" class="hidden space-y-2">
+                        <label class="block text-xs font-mono uppercase tracking-wider text-slate-300">Raw CSV Data Lines (Include Header)</label>
+                        <textarea id="csv-text-input" placeholder="Name,Quorum&#10;Ethan Smith,Priest&#10;Jack Taylor,Deacon" class="w-full h-32 bg-slate-950 border border-slate-800 rounded-xl p-4 font-mono text-xs text-emerald-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition shadow-inner leading-relaxed resize-none"></textarea>
+                    </div>
                 </div>
 
-                <button onclick="startIngestion()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-4 px-6 rounded-xl transition-all duration-200 transform active:scale-[0.99] tracking-wider text-sm font-display flex justify-center items-center space-x-2 shadow-lg shadow-amber-500/10">
-                    <span>Initialize Data Collection</span>
+                <button id="btn-initialize" onclick="startIngestion()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-4 px-6 rounded-xl transition-all duration-200 transform active:scale-[0.99] tracking-wider text-sm font-display flex justify-center items-center space-x-2 shadow-lg shadow-amber-500/10">
+                    <span id="btn-init-text">Fetch & Initialize Roster</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                 </button>
             </div>
 
 
-            <!-- ======================================================= -->
-            <!-- SCREEN 2: SEQUENTIAL DATA ENTRY                         -->
-            <!-- ======================================================= -->
             <div id="screen-entry" class="hidden space-y-8">
-                <!-- Profile Header Card -->
                 <div class="bg-slate-950/60 border border-slate-800/60 rounded-xl p-5 flex justify-between items-center">
                     <div>
                         <span id="entry-quorum" class="text-[10px] font-mono tracking-widest text-amber-500 uppercase px-2 py-0.5 rounded border border-amber-500/20 bg-amber-500/5"></span>
@@ -89,18 +91,14 @@
                     </div>
                 </div>
 
-                <!-- Form Inputs -->
                 <form id="entry-form" onsubmit="submitBoyData(event)" class="space-y-5">
                     
-                    <!-- Q1: Pop Culture Character -->
                     <div class="space-y-2">
                         <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">1. Pop Culture Character Persona</label>
                         <input type="text" id="input-character" required placeholder="e.g., Batman, Obi-Wan, Spider-Man" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition">
                     </div>
 
-                    <!-- Grid Layout for Dropdowns -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- Q2: Animal Persona -->
                         <div class="space-y-2">
                             <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">2. Animal Spirit</label>
                             <select id="input-animal" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition appearance-none">
@@ -115,7 +113,6 @@
                             </select>
                         </div>
 
-                        <!-- Q3: Superpower -->
                         <div class="space-y-2">
                             <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">3. Tactical Superpower</label>
                             <select id="input-superpower" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition appearance-none">
@@ -129,11 +126,10 @@
                             </select>
                         </div>
 
-                        <!-- Q4: Trail Weakness -->
                         <div class="space-y-2">
                             <label class="block text-xs font-mono uppercase tracking-wider text-slate-400">4. Known Weakness</label>
                             <select id="input-weakness" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition appearance-none">
-                                <option value="" disabled selected>Select Kryptonite...</option>
+                                <option value="" disabled selected>Select Cryptonite...</option>
                                 <option value="Cold mornings">Cold mornings</option>
                                 <option value="Heat">Heat</option>
                                 <option value="Hunger">Hunger</option>
@@ -144,7 +140,6 @@
                         </div>
                     </div>
 
-                    <!-- CTA Submission Button -->
                     <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-bold py-4 px-6 rounded-xl transition-all duration-200 transform active:scale-[0.99] tracking-wider text-sm font-display flex justify-center items-center space-x-2 mt-4">
                         <span id="btn-submit-text">Log Data & Proceed</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
@@ -153,9 +148,6 @@
             </div>
 
 
-            <!-- ======================================================= -->
-            <!-- SCREEN 3: THE REVEAL                                    -->
-            <!-- ======================================================= -->
             <div id="screen-reveal" class="hidden space-y-8">
                 <div class="text-center space-y-3">
                     <span class="text-emerald-400 text-xs font-mono tracking-widest block uppercase">// Processing Complete</span>
@@ -165,12 +157,9 @@
                     </p>
                 </div>
 
-                <!-- Generated Pairs Mount Point -->
                 <div id="pairings-container" class="space-y-6 max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar">
-                    <!-- Dynamic Rows Go Here -->
-                </div>
+                    </div>
 
-                <!-- Control Actions -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-800/80">
                     <button onclick="restartApp()" class="w-full bg-slate-950 hover:bg-slate-900 text-slate-400 border border-slate-800 font-semibold py-3 px-4 rounded-xl transition text-xs font-mono tracking-wider uppercase">
                         Reset System
@@ -184,73 +173,124 @@
         </div>
     </main>
 
-    <!-- Footer / Branding -->
     <footer class="border-t border-slate-900 px-6 py-4 text-center">
         <p class="text-[10px] font-mono text-slate-600 uppercase tracking-widest">
             STRENGTH & HONOR &bull; MISSION READY PROTOTYPE &bull; &copy; 2026
         </p>
     </footer>
 
-    <!-- ======================================================= -->
-    <!-- APPLICATION ARCHITECT LOGIC (JAVASCRIPT)                -->
-    <!-- ======================================================= -->
     <script>
-        // Default Sample Roster Data for immediate testing/editing
-        const defaultRoster = [
-            { "name": "Ethan Smith", "quorum": "Priest" },
-            { "name": "Caleb Jones", "quorum": "Priest" },
-            { "name": "Mason Davis", "quorum": "Teacher" },
-            { "name": "Luke Wilson", "quorum": "Teacher" },
-            { "name": "Jack Taylor", "quorum": "Deacon" },
-            { "name": "Oliver Brown", "quorum": "Deacon" },
-            { "name": "Wyatt Miller", "quorum": "Deacon" },
-            { "name": "Owen Garcia", "quorum": "Deacon" }
-        ];
-
-        // Christ-Like Attributes Array for automated random assignments
         const christAttributes = ["Strength", "Peace", "Courage", "Friendship", "Gratitude", "Repentance", "Faith", "Obedience", "Forgiveness"];
-
-        // State Machine Object
+        
         let state = {
+            currentMethod: 'url', // 'url' or 'text'
             roster: [],
             completedProfiles: [],
             currentIndex: 0
         };
 
-        // Initialize App UI
-        document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById('roster-input').value = JSON.stringify(defaultRoster, null, 4);
-        });
+        // Tab Switching Logic
+        function switchInputMethod(method) {
+            state.currentMethod = method;
+            const tabUrl = document.getElementById('tab-url');
+            const tabText = document.getElementById('tab-text');
+            const contUrl = document.getElementById('container-url');
+            const contText = document.getElementById('container-text');
+            const btnText = document.getElementById('btn-init-text');
 
-        // Parse input string and boot up step-by-step wizard
-        function startIngestion() {
-            try {
-                const rawData = document.getElementById('roster-input').value;
-                state.roster = JSON.parse(rawData);
-                
-                if(!Array.isArray(state.roster) || state.roster.length === 0) {
-                    alert("System Error: Roster configuration must be an array populated with items.");
-                    return;
-                }
-                
-                state.completedProfiles = [];
-                state.currentIndex = 0;
-                
-                // Show Progress elements
-                document.getElementById('progress-badge').classList.remove('hidden');
-                updateProgressUI();
-                
-                // Shift Screens
-                document.getElementById('screen-intro').classList.add('hidden');
-                document.getElementById('screen-entry').classList.remove('hidden');
-                
-                loadBoyToForm();
-            } catch (e) {
-                alert("Data Parse Violation: Check your JSON format for syntax errors.");
+            if (method === 'url') {
+                tabUrl.className = "text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded border border-amber-500 text-amber-400 bg-amber-500/5 transition";
+                tabText.className = "text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded border border-slate-800 text-slate-500 hover:text-slate-300 transition";
+                contUrl.classList.remove('hidden');
+                contText.classList.add('hidden');
+                btnText.innerText = "Fetch & Initialize Roster";
+            } else {
+                tabText.className = "text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded border border-amber-500 text-amber-400 bg-amber-500/5 transition";
+                tabUrl.className = "text-xs font-mono uppercase tracking-wider px-3 py-1.5 rounded border border-slate-800 text-slate-500 hover:text-slate-300 transition";
+                contText.classList.remove('hidden');
+                contUrl.classList.add('hidden');
+                btnText.innerText = "Parse Manual CSV";
             }
         }
 
-        // Dynamically load current index boy into form UI
+        // CSV String Parser Engine
+        function parseCSVToRoster(csvText) {
+            const lines = csvText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            if(lines.length < 2) return [];
+
+            // Read header mappings
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const nameIdx = headers.indexOf('name');
+            const quorumIdx = headers.indexOf('quorum');
+
+            if (nameIdx === -1 || quorumIdx === -1) {
+                alert("Header Verification Failed: Your CSV columns must include 'Name' and 'Quorum'.");
+                return [];
+            }
+
+            const parsedData = [];
+            for (let i = 1; i < lines.length; i++) {
+                const cells = lines[i].split(',').map(c => c.trim());
+                if (cells.length > Math.max(nameIdx, quorumIdx)) {
+                    parsedData.push({
+                        name: cells[nameIdx],
+                        quorum: cells[quorumIdx]
+                    });
+                }
+            }
+            return parsedData;
+        }
+
+        // Master Ingestion Initialization
+        async function startIngestion() {
+            let rawCsv = "";
+            const initBtn = document.getElementById('btn-initialize');
+
+            if (state.currentMethod === 'url') {
+                const url = document.getElementById('sheet-url-input').value.trim();
+                if (!url) {
+                    alert("Input Error: Please provide a valid published Google Sheets URL.");
+                    return;
+                }
+                
+                try {
+                    initBtn.disabled = true;
+                    initBtn.innerText = "CONNECTING FREQUENCY...";
+                    
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error("Network intercept failure");
+                    rawCsv = await response.text();
+                } catch (e) {
+                    alert("Sync Error: Failed to fetch data from the provided URL. Make sure it is 'Published to the Web' as a Comma-separated values (.csv) file.");
+                    initBtn.disabled = false;
+                    initBtn.innerText = "Fetch & Initialize Roster";
+                    return;
+                }
+            } else {
+                rawCsv = document.getElementById('csv-text-input').value.trim();
+            }
+
+            state.roster = parseCSVToRoster(rawCsv);
+            initBtn.disabled = false;
+            document.getElementById('btn-init-text').innerText = state.currentMethod === 'url' ? "Fetch & Initialize Roster" : "Parse Manual CSV";
+
+            if (state.roster.length === 0) {
+                alert("Data Violation: Roster resulted in 0 recognized entries. Verify headings.");
+                return;
+            }
+
+            state.completedProfiles = [];
+            state.currentIndex = 0;
+            
+            document.getElementById('progress-badge').classList.remove('hidden');
+            updateProgressUI();
+            
+            document.getElementById('screen-intro').classList.add('hidden');
+            document.getElementById('screen-entry').classList.remove('hidden');
+            
+            loadBoyToForm();
+        }
+
         function loadBoyToForm() {
             if(state.currentIndex >= state.roster.length) {
                 processPairingsAndReveal();
@@ -262,29 +302,22 @@
             document.getElementById('entry-quorum').innerText = `${currentBoy.quorum} Guild`;
             document.getElementById('entry-index-visual').innerText = `${state.currentIndex + 1} / ${state.roster.length}`;
             
-            // Adjust CTA text if on final boy
             if(state.currentIndex === state.roster.length - 1) {
                 document.getElementById('btn-submit-text').innerText = "Process & Generate Pairings";
             } else {
                 document.getElementById('btn-submit-text').innerText = "Log Data & Proceed";
             }
 
-            // Clear text field values for fresh input
             document.getElementById('entry-form').reset();
             document.getElementById('input-character').focus();
             updateProgressUI();
         }
 
-        // Action when form completes submission
         function submitBoyData(event) {
             event.preventDefault();
-            
             const currentBoy = state.roster[state.currentIndex];
-            
-            // Draw random christ-like attribute
             const randomAttribute = christAttributes[Math.floor(Math.random() * christAttributes.length)];
 
-            // Create Profile Record Object
             const completedProfile = {
                 ...currentBoy,
                 character: document.getElementById('input-character').value.trim(),
@@ -296,7 +329,6 @@
 
             state.completedProfiles.push(completedProfile);
             state.currentIndex++;
-            
             loadBoyToForm();
         }
 
@@ -304,14 +336,10 @@
             document.getElementById('progress-text').innerText = `${state.currentIndex}/${state.roster.length}`;
         }
 
-        // =======================================================
-        // GENERATE TACTICAL PAIRING STORY SUMMARY
-        // =======================================================
         function generateSynergyStory(pair) {
             const b1 = pair[0];
             const b2 = pair[1];
             
-            // Scenario 1: Counter-balancing a weakness with a superpower
             if (b1.weakness === "Cold mornings" && b2.superpower === "Instant Food Manifestation" || 
                 b2.weakness === "Cold mornings" && b1.superpower === "Instant Food Manifestation") {
                 return `Strategic pairing locked: One of these trail brothers despises cold mornings, but luckily, the other can instantly manifest hot food on demand to save camp morale before sunrise.`;
@@ -327,7 +355,6 @@
                 return `${b2.name} might struggle climbing uphill, but ${b1.name} is deployed with ${b1.superpower} to literally pull or carry this squad over the summit.`;
             }
 
-            // Scenario 2: Animal Spirit Matches
             if (b1.animal === b2.animal) {
                 return `Operational Alert: Two ${b1.animal} spirits have collided. This group possesses double the natural instincts and absolute pack symmetry on the mountain.`;
             }
@@ -336,9 +363,7 @@
                 return `Apex Squad Formed: The ultimate pairing of a ${b1.animal} and a ${b2.animal}. Wildlife on the trail better steer completely clear of this vanguard.`;
             }
 
-            // Scenario 3: Fictional Team Ups
             if (b1.character.toLowerCase() !== b2.character.toLowerCase()) {
-                // If they have distinct pop-culture entries, cross-reference them
                 const hooks = [
                     `Command has cleared the legendary team-up of ${b1.character} and ${b2.character}. Their combined power sets a new benchmark for trail security.`,
                     `When you combine the tactical brilliance of ${b1.character} with the pure energy of ${b2.character}, no obstacle stands a chance.`,
@@ -347,36 +372,27 @@
                 return hooks[Math.floor(Math.random() * hooks.length)];
             }
 
-            // Fallback Gen 4: Default Attribute Catalyst
             return `Brotherhood Alignment: Bound together by the matching attributes of ${b1.attribute} and ${b2.attribute}, their collective focus will conquer both trail logistics and spiritual markers.`;
         }
 
-        // =======================================================
-        // STRATEGIC CROSS-AGE PAIRING ALGORITHM WITH STORY ENGINE
-        // =======================================================
         function processPairingsAndReveal() {
             document.getElementById('screen-entry').classList.add('hidden');
             document.getElementById('screen-reveal').classList.remove('hidden');
             document.getElementById('progress-badge').classList.add('hidden');
 
             let pool = [...state.completedProfiles];
-            
-            // Break down array into demographic buckets
             let deacons = pool.filter(b => b.quorum.toLowerCase() === 'deacon');
             let olderBoys = pool.filter(b => b.quorum.toLowerCase() === 'teacher' || b.quorum.toLowerCase() === 'priest');
 
-            // Scramble arrays to guarantee organic variance across generation runs
             deacons.sort(() => Math.random() - 0.5);
             olderBoys.sort(() => Math.random() - 0.5);
 
             let pairings = [];
 
-            // Primary Pass: Pair Deacons up with older boys
             while (deacons.length > 0 && olderBoys.length > 0) {
                 pairings.push([deacons.pop(), olderBoys.pop()]);
             }
 
-            // Secondary Pass: Check remaining pools if mathematical asymmetry leaves overages
             let leftOverPool = [...deacons, ...olderBoys];
             leftOverPool.sort(() => Math.random() - 0.5);
 
@@ -384,12 +400,10 @@
                 pairings.push([leftOverPool.pop(), leftOverPool.pop()]);
             }
 
-            // Triplet Pass: If odd number array left 1 final boy out, join him with the first duo
             if (leftOverPool.length === 1) {
                 if(pairings.length > 0) {
                     pairings[0].push(leftOverPool.pop());
                 } else {
-                    // Safe fall-back if total camp size was exactly 1 single human
                     pairings.push([leftOverPool.pop()]);
                 }
             }
@@ -397,7 +411,6 @@
             renderPairs(pairings);
         }
 
-        // Render final calculated teams to Dashboard DOM View
         function renderPairs(pairings) {
             const container = document.getElementById('pairings-container');
             container.innerHTML = '';
@@ -406,14 +419,12 @@
                 const card = document.createElement('div');
                 card.className = "bg-slate-950/80 border border-slate-800/80 rounded-xl p-5 space-y-4 relative shadow-md";
                 
-                // Manifest badge marker
                 let badgeText = `TRAIL TEAM ${idx + 1}`;
                 if(pair.length === 3) badgeText += " [TRIPLET OUTPOST]";
 
                 let membersHtml = '';
                 
                 pair.forEach(boy => {
-                    // Quorum custom coloring strings
                     let qColor = "text-amber-400 border-amber-500/20 bg-amber-500/5";
                     if(boy.quorum.toLowerCase() === 'teacher') qColor = "text-sky-400 border-sky-500/20 bg-sky-500/5";
                     if(boy.quorum.toLowerCase() === 'priest') qColor = "text-emerald-400 border-emerald-500/20 bg-emerald-500/5";
@@ -439,7 +450,6 @@
                     `;
                 });
 
-                // Generate contextual brief narrative based on user responses
                 const squadBriefStory = generateSynergyStory(pair);
 
                 card.innerHTML = `
@@ -450,7 +460,6 @@
                     <div class="space-y-2.5">
                         ${membersHtml}
                     </div>
-                    <!-- Tactical Synergy Briefing Section -->
                     <div class="mt-3 bg-amber-500/5 border border-amber-500/20 rounded-lg p-3">
                         <span class="text-[9px] font-mono uppercase tracking-widest block text-amber-500 mb-1">// Tactical Synergy Analysis</span>
                         <p class="text-[11px] text-slate-300 italic font-mono leading-relaxed">"${squadBriefStory}"</p>
@@ -460,7 +469,6 @@
             });
         }
 
-        // Reboot application back to base operational view
         function restartApp() {
             if(confirm("Are you sure you want to clear current assignments?")) {
                 document.getElementById('screen-reveal').classList.add('hidden');
@@ -473,5 +481,3 @@
     </script>
 </body>
 </html>
-
-Initial commit of trail brother app
